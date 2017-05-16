@@ -2,7 +2,7 @@ package blobstore
 
 import (
 	"fmt"
-	"path"
+	"path/filepath"
 
 	boshcrypto "github.com/cloudfoundry/bosh-utils/crypto"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -60,7 +60,7 @@ func (p Provider) Get(storeType string, options map[string]interface{}) (DigestB
 			p.fs,
 			p.runner,
 			p.uuidGen,
-			path.Join(p.configDir, fmt.Sprintf("blobstore-%s.json", storeType)),
+			filepath.Join(p.configDir, fmt.Sprintf("blobstore-%s.json", storeType)),
 		)
 	}
 

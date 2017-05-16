@@ -3,7 +3,7 @@ package blobstore
 import (
 	"io"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"fmt"
@@ -25,7 +25,7 @@ func NewBlobManager(fs boshsys.FileSystem, blobstorePath string) (manager BlobMa
 }
 
 func (manager BlobManager) Fetch(blobID string) (boshsys.File, error, int) {
-	blobPath := path.Join(manager.blobstorePath, blobID)
+	blobPath := filepath.Join(manager.blobstorePath, blobID)
 
 	readOnlyFile, err := manager.fs.OpenFile(blobPath, os.O_RDONLY, os.ModeDir)
 	if err != nil {
@@ -40,7 +40,7 @@ func (manager BlobManager) Fetch(blobID string) (boshsys.File, error, int) {
 }
 
 func (manager BlobManager) Write(blobID string, reader io.Reader) error {
-	blobPath := path.Join(manager.blobstorePath, blobID)
+	blobPath := filepath.Join(manager.blobstorePath, blobID)
 
 	writeOnlyFile, err := manager.fs.OpenFile(blobPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
@@ -63,7 +63,7 @@ func (manager BlobManager) GetPath(blobID string, digest boshcrypto.Digest) (str
 		return "", bosherr.Errorf("Blob '%s' not found", blobID)
 	}
 
-	tempFilePath, err := manager.copyToTmpFile(path.Join(manager.blobstorePath, blobID))
+	tempFilePath, err := manager.copyToTmpFile(filepath.Join(manager.blobstorePath, blobID))
 	if err != nil {
 		return "", err
 	}
@@ -84,12 +84,12 @@ func (manager BlobManager) GetPath(blobID string, digest boshcrypto.Digest) (str
 }
 
 func (manager BlobManager) Delete(blobID string) error {
-	localBlobPath := path.Join(manager.blobstorePath, blobID)
+	localBlobPath := filepath.Join(manager.blobstorePath, blobID)
 	return manager.fs.RemoveAll(localBlobPath)
 }
 
 func (manager BlobManager) BlobExists(blobID string) bool {
-	blobPath := path.Join(manager.blobstorePath, blobID)
+	blobPath := filepath.Join(manager.blobstorePath, blobID)
 	return manager.fs.FileExists(blobPath)
 }
 

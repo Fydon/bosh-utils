@@ -2,7 +2,7 @@ package blobstore
 
 import (
 	"os"
-	"path"
+	"path/filepath"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
@@ -40,7 +40,7 @@ func (b localBlobstore) Get(blobID string) (fileName string, err error) {
 
 	fileName = file.Name()
 
-	err = b.fs.CopyFile(path.Join(b.path(), blobID), fileName)
+	err = b.fs.CopyFile(filepath.Join(b.path(), blobID), fileName)
 	if err != nil {
 		b.fs.RemoveAll(fileName)
 		return "", bosherr.WrapError(err, "Copying file")
@@ -55,7 +55,7 @@ func (b localBlobstore) CleanUp(fileName string) error {
 }
 
 func (b localBlobstore) Delete(blobID string) error {
-	blobPath := path.Join(b.path(), blobID)
+	blobPath := filepath.Join(b.path(), blobID)
 	return b.fs.RemoveAll(blobPath)
 }
 
@@ -73,7 +73,7 @@ func (b localBlobstore) Create(fileName string) (blobID string, err error) {
 		return
 	}
 
-	err = b.fs.CopyFile(fileName, path.Join(b.path(), blobID))
+	err = b.fs.CopyFile(fileName, filepath.Join(b.path(), blobID))
 	if err != nil {
 		err = bosherr.WrapError(err, "Copying file to blobstore path")
 		blobID = ""

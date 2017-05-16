@@ -2,7 +2,6 @@ package system_test
 
 import (
 	"os"
-	"path"
 	"path/filepath"
 	"syscall"
 
@@ -36,7 +35,7 @@ var _ = Describe("Windows Specific tests", func() {
 		dstFile, err := ioutil.TempFile(`\\?\`+longPath, "")
 		Expect(err).ToNot(HaveOccurred())
 
-		dstPath := path.Join(longPath, filepath.Base(dstFile.Name()))
+		dstPath := filepath.Join(longPath, filepath.Base(dstFile.Name()))
 		defer os.Remove(dstPath)
 		dstFile.Close()
 

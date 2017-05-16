@@ -3,7 +3,7 @@ package fakes_test
 import (
 	"errors"
 	"os"
-	"path"
+	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -127,7 +127,7 @@ var _ = Describe("FakeFileSystem", func() {
 
 		BeforeEach(func() {
 			for fixtureFile, contents := range fixtureFiles {
-				fs.WriteFileString(path.Join(fixtureDirPath, fixtureFile), contents)
+				fs.WriteFileString(filepath.Join(fixtureDirPath, fixtureFile), contents)
 			}
 		})
 
@@ -141,10 +141,10 @@ var _ = Describe("FakeFileSystem", func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			for fixtureFile := range fixtureFiles {
-				srcContents, err := fs.ReadFile(path.Join(srcPath, fixtureFile))
+				srcContents, err := fs.ReadFile(filepath.Join(srcPath, fixtureFile))
 				Expect(err).ToNot(HaveOccurred())
 
-				dstContents, err := fs.ReadFile(path.Join(dstPath, fixtureFile))
+				dstContents, err := fs.ReadFile(filepath.Join(dstPath, fixtureFile))
 				Expect(err).ToNot(HaveOccurred())
 
 				Expect(srcContents).To(Equal(dstContents), "Copied file does not match source file: '%s", fixtureFile)

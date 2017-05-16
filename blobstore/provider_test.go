@@ -1,6 +1,8 @@
 package blobstore_test
 
 import (
+	"path/filepath"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -23,7 +25,7 @@ var _ = Describe("Provider", func() {
 		fs = fakesys.NewFakeFileSystem()
 		runner = fakesys.NewFakeCmdRunner()
 		logger = boshlog.NewLogger(boshlog.LevelNone)
-		provider = NewProvider(fs, runner, "/var/vcap/config", logger)
+		provider = NewProvider(fs, runner, filepath.Join("/", "var", "vcap", "config"), logger)
 	})
 
 	Describe("Get", func() {
@@ -43,7 +45,7 @@ var _ = Describe("Provider", func() {
 				fs,
 				runner,
 				boshuuid.NewGenerator(),
-				"/var/vcap/config/blobstore-fake-external-type.json",
+				filepath.Join("/", "var", "vcap", "config", "blobstore-fake-external-type.json"),
 			)
 
 			expectedAlgos := []boshcrypto.Algorithm{

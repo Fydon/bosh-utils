@@ -248,7 +248,7 @@ func (fs *FakeFileSystem) ExpandPath(path string) (string, error) {
 }
 
 func (fs *FakeFileSystem) RegisterMkdirAllError(path string, err error) {
-	path = gopath.Join(path)
+	path = filepath.Join(path)
 	if _, ok := fs.mkdirAllErrorByPath[path]; ok {
 		panic(fmt.Sprintf("MkdirAll error is already set for path: %s", path))
 	}
@@ -263,7 +263,7 @@ func (fs *FakeFileSystem) MkdirAll(path string, perm os.FileMode) error {
 		return fs.MkdirAllError
 	}
 
-	path = gopath.Join(path)
+	path = filepath.Join(path)
 
 	if fs.mkdirAllErrorByPath[path] != nil {
 		return fs.mkdirAllErrorByPath[path]
@@ -278,7 +278,7 @@ func (fs *FakeFileSystem) MkdirAll(path string, perm os.FileMode) error {
 }
 
 func (fs *FakeFileSystem) RegisterOpenFile(path string, file *FakeFile) {
-	path = gopath.Join(path)
+	path = filepath.Join(path)
 	fs.openFileRegistry.Register(path, file)
 }
 
@@ -427,7 +427,7 @@ func (fs *FakeFileSystem) WriteFile(path string, content []byte) error {
 	}
 
 	path = fs.fileRegistry.UnifiedPath(path)
-	parent := gopath.Dir(path)
+	parent := filepath.Dir(path)
 	if parent != "." {
 		fs.writeDir(parent)
 	}
@@ -439,9 +439,9 @@ func (fs *FakeFileSystem) WriteFile(path string, content []byte) error {
 }
 
 func (fs *FakeFileSystem) writeDir(path string) error {
-	parent := gopath.Dir(path)
+	parent := filepath.Dir(path)
 
-	grandparent := gopath.Dir(parent)
+	grandparent := filepath.Dir(parent)
 	if grandparent != parent {
 		fs.writeDir(parent)
 	}
@@ -530,7 +530,7 @@ func (fs *FakeFileSystem) Rename(oldPath, newPath string) error {
 	oldPath = fs.fileRegistry.UnifiedPath(oldPath)
 	newPath = fs.fileRegistry.UnifiedPath(newPath)
 
-	parentDir := gopath.Dir(newPath)
+	parentDir := filepath.Dir(newPath)
 	if parentDir != "." && fs.fileRegistry.Get(parentDir) == nil {
 		return errors.New("Parent directory does not exist")
 	}
@@ -576,7 +576,7 @@ func (fs *FakeFileSystem) ReadAndFollowLink(symlinkPath string) (string, error) 
 		return "", fs.ReadAndFollowLinkError
 	}
 
-	symlinkPath = gopath.Join(symlinkPath)
+	symlinkPath = filepath.Join(symlinkPath)
 
 	stat := fs.GetFileTestStat(symlinkPath)
 	if stat != nil {
@@ -625,7 +625,7 @@ func (fs *FakeFileSystem) CopyDir(srcPath, dstPath string) error {
 
 	for filePath, fileStats := range fs.fileRegistry.GetAll() {
 		if strings.HasPrefix(filePath, srcPath) {
-			dstPath := gopath.Join(dstPath, filePath[len(srcPath)-1:])
+			dstPath := filepath.Join(dstPath, filePath[len(srcPath)-1:])
 			fs.fileRegistry.Register(dstPath, fileStats)
 		}
 	}
@@ -801,7 +801,7 @@ func (fs *FakeFileSystem) Walk(root string, walkFunc filepath.WalkFunc) error {
 	}
 	sort.Strings(paths)
 
-	root = gopath.Join(root) + "/"
+	root = filepath.Join(root, "/")
 	for _, path := range paths {
 		fileStats := fs.fileRegistry.Get(path)
 		if strings.HasPrefix(path, root) {
